@@ -2,7 +2,13 @@
 
 #include "math.h"
 
-constexpr uint32_t NUM_TRIS = 64;
+#define USE_TESTFILE 1
+
+#if USE_TESTFILE
+constexpr uint32_t NUM_TRIS = 12582; //testfile contains 12582 triangles
+#else
+constexpr uint32_t NUM_TRIS = 64; //testfile contains 64 triangles, for testing purposes
+#endif
 
 struct BHVNode;
 

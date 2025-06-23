@@ -14,6 +14,8 @@
 //simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 64   Render: ~19ms BVHBuild: 0.005ms
 //simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 512  Render: ~60ms BVHBuild: 0.069ms
 //simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 1024 Render: ~93ms BVHBuild: 0.142ms
+//simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 12582 Render: ~225ms BVHBuild: 1.486ms
+
 
 import std;
 
@@ -73,12 +75,12 @@ void Renderer::Render(Scene& scene)
 			}
 #else
 			IntersectBVH(ray, scene, GetBVH());  /* check if the ray intersects with the BVH. */
+#endif
 			if (ray.t < 1e30f)  /* if the ray intersects with the triangle, draw it. */
 			{
-				SDL_WriteSurfacePixel(m_surface, x, y, 0xFF, 0xFF, 0xFF, 0xFF);  /* draw the pixel with a random color. */
+				uint8_t c = 255 - (int)(ray.t * 40);
+				SDL_WriteSurfacePixel(m_surface, x, y, c, c, c, c);  /* draw the pixel with a random color. */
 			}
-#endif
-
 		}
 		
 	}
