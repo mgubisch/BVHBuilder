@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <glm/glm.hpp>
 
 class Renderer
 {
@@ -16,5 +17,12 @@ public:
 private:
 	SDL_Window* m_window{ nullptr };
 	SDL_Surface* m_surface{ nullptr };
+
+	glm::vec3 m_cameraPos{ 0.0f, 0.0f, -18.0f };  // Camera position in world space
+
+	//virtual camera plane
+	const glm::vec3 p0{-1.0f, 1.0f, -15.0f};
+	const glm::vec3 p1{1.0f, 1.0f, -15.0f};
+	const glm::vec3 p2{ -1.0f, -1.0f, -15.0f };
 };
 

@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/vcpkg_installed/x64-windows/x64-windows
+/vcpkg_installed/x64-windows/vcpkg/info/glm_1.0.1_x64-windows.list
+/vcpkg_installed/x64-windows/vcpkg/status

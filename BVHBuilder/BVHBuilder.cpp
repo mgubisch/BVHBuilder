@@ -21,7 +21,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
         return SDL_APP_FAILURE;
     }
 
-    if (!(window = SDL_CreateWindow("BVHBuilder", 640, 480, 0))) {
+    if (!(window = SDL_CreateWindow("BVHBuilder", 640, 640, 0))) {
         SDL_Log("Couldn't create window: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
