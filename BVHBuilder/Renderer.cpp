@@ -2,47 +2,44 @@
 #include <cassert>
 
 #include "math.h"
+#include "Timer.h"
+#include "Scene.h"
+#include "BVH.h"
 
 //Runtimes
-//brute force intersection of 64 triangles with 640x640 pixels: Render: ~96ms BVHBuild: 0ms
+//brute force intersection triangles with 640x640 pixels: NUM_TRIS = 64   Render: ~96ms   BVHBuild: 0ms
+//brute force intersection triangles with 640x640 pixels: NUM_TRIS = 512  Render: ~1109ms BVHBuild: 0ms
+//brute force intersection triangles with 640x640 pixels: NUM_TRIS = 1024 Render: ~2980ms BVHBuild: 0ms
+
+//simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 64   Render: ~19ms BVHBuild: 0.005ms
+//simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 512  Render: ~60ms BVHBuild: 0.069ms
+//simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 1024 Render: ~93ms BVHBuild: 0.142ms
 
 import std;
 
-// timer
-struct Timer
-{	
-	Timer() { reset(); }
-	float elapsed() const
-	{
-		using namespace std;
-		chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();
-		chrono::duration<double> time_span = chrono::duration_cast<chrono::duration<double>>(t2 - start);
-		return (float)time_span.count();
-	}
-	void reset() { start = std::chrono::high_resolution_clock::now(); }
-	std::chrono::high_resolution_clock::time_point start;
-};
-
 Timer timer;  /* global timer to measure frame time. */
 
-//todo: move this to a separate file
-constexpr size_t NUM_TRIS = 64;
-Tri tri[NUM_TRIS];
-
-void create_scene()
+void IntersectBVH(Ray& ray, const Scene& scene, const BVH& bvh, uint32_t nodeIndex = 0)
 {
-	for (int i{0}; i < NUM_TRIS; ++i)
+	const BVHNode& node = bvh.nodes[nodeIndex];
+
+	if (!IntersectAABB(ray, node.aabbMin, node.aabbMax))
+		return;
+
+	if (node.isLeaf())
 	{
-
-		glm::vec3 r0(RandomFloat(), RandomFloat(), RandomFloat());
-		glm::vec3 r1(RandomFloat(), RandomFloat(), RandomFloat());
-		glm::vec3 r2(RandomFloat(), RandomFloat(), RandomFloat());
-		tri[i].vertex0 = r0 * 9.0f - glm::vec3(5.0f);
-		tri[i].vertex1 = tri[i].vertex0 + r1;
-		tri[i].vertex2 = tri[i].vertex0 + r2;
+		for (uint32_t i{ 0 }; i < node.numPrims; ++i)
+		{
+			IntersectTri(ray, scene.tris[bvh.triIdx[node.leftFirst + i]]);  /* check if the ray intersects with the triangle. */
+		}
 	}
-}
+	else
+	{
+		IntersectBVH(ray, scene, bvh, node.leftFirst);  /* recursively check the left child node. */
+		IntersectBVH(ray, scene, bvh, node.leftFirst + 1);  /* recursively check the right child node. */
+	}
 
+}
 
 void Renderer::Init(SDL_Window* window)
 {
@@ -50,11 +47,9 @@ void Renderer::Init(SDL_Window* window)
 	m_window = window;
 	m_surface = SDL_GetWindowSurface(m_window);
 	assert(m_surface != nullptr && "Renderer surface cannot be null");
-
-	create_scene();  /* create the scene with triangles. */
 }
 
-void Renderer::Render()
+void Renderer::Render(Scene& scene)
 {
 	timer.reset();  /* reset the timer at the start of each frame. */
 	
@@ -71,14 +66,19 @@ void Renderer::Render()
 			ray.Direction = glm::normalize(pixelPos - m_cameraPos);  /* set the ray direction to the pixel position minus the camera position. */
 			ray.t = 1e30f;  /* reset the ray t value to a large value. */
 
+#if 0
 			for(int i{ 0 }; i < NUM_TRIS; ++i)
 			{
-				IntersectTri(ray, tri[i]);  /* check if the ray intersects with the triangle. */
-				if (ray.t < 1e30f)  /* if the ray intersects with the triangle, draw it. */
-				{
-					SDL_WriteSurfacePixel(m_surface, x, y, 0xFF, 0xFF, 0xFF, 0xFF);  /* draw the pixel with a random color. */
-				}
+				IntersectTri(ray, scene.tris[i]);  /* check if the ray intersects with the triangle. */
 			}
+#else
+			IntersectBVH(ray, scene, GetBVH());  /* check if the ray intersects with the BVH. */
+			if (ray.t < 1e30f)  /* if the ray intersects with the triangle, draw it. */
+			{
+				SDL_WriteSurfacePixel(m_surface, x, y, 0xFF, 0xFF, 0xFF, 0xFF);  /* draw the pixel with a random color. */
+			}
+#endif
+
 		}
 		
 	}

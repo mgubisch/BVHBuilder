@@ -6,10 +6,13 @@
 #include <SDL3/SDL_main.h>
 
 #include "Renderer.h"
+#include "Timer.h"
+#include "BVH.h"
 
 /* We will use this renderer to draw into this window every frame. */
 static SDL_Window* window = NULL;
 static Renderer* renderer = nullptr;
+static Scene scene;  /* Create a scene object to hold the triangles. */
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
@@ -28,6 +31,14 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
 
 	renderer = new Renderer();
 	renderer->Init(window);  /* Initialize the renderer with the window surface. */
+
+    {
+		Timer timer;  /* Create a timer to measure the time taken to build the BVH. */
+		timer.reset();  /* Reset the timer at the start of the program. */
+		BuildBVH(scene);  /* Build the BVH for the scene. */
+		auto elapsed = timer.elapsed();  /* Get the elapsed time for building the BVH. */
+		SDL_Log("BVH build time: %.3f ms", elapsed * 1000.0f);  /* Log the BVH build time in milliseconds. */
+    }
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
@@ -48,7 +59,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
    
 	renderer->Clear();  /* clear the renderer surface. */
    
-    renderer->Render();	
+    renderer->Render(scene);	
 
 	renderer->Present();  /* present the renderer surface to the window. */
 

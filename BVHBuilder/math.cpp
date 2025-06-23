@@ -27,3 +27,16 @@ void IntersectTri(Ray& ray, const Tri& tri)
 		ray.t = t;  // Update the ray's t value if intersection occurs
 	}
 }
+
+bool IntersectAABB(const Ray& ray, const glm::vec3& aabbMin, const glm::vec3& aabbMax)
+{
+	using namespace glm;
+	vec3 invDir = 1.0f / ray.Direction;
+	vec3 t0 = (aabbMin - ray.Origin) * invDir;
+	vec3 t1 = (aabbMax - ray.Origin) * invDir;
+	vec3 tmin = min(t0, t1);
+	vec3 tmax = max(t0, t1);
+	float tNear = max(max(tmin.x, tmin.y), tmin.z);
+	float tFar = min(min(tmax.x, tmax.y), tmax.z);
+	return tNear <= tFar && tFar >= 0.0f;
+}

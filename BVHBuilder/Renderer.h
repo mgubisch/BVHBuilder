@@ -3,13 +3,15 @@
 #include <SDL3/SDL.h>
 #include <glm/glm.hpp>
 
+#include "Scene.h"
+
 class Renderer
 {
 public:
 	Renderer() = default;
 	~Renderer() = default;
 	void Init(SDL_Window* window);
-	void Render();
+	void Render(Scene& scene);
 	void Clear();
 	void Present();
 	void Shutdown();

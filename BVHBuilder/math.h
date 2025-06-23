@@ -8,7 +8,7 @@ struct Tri
 	glm::vec3 vertex0;
 	glm::vec3 vertex1;
 	glm::vec3 vertex2;
-	glm::vec3 centeroid;
+	glm::vec3 centroid;
 };
 
 struct Ray
@@ -30,3 +30,4 @@ inline [[nodiscard]] float RandomFloat()
 
 
 void IntersectTri(Ray& ray, const Tri& tri);
+bool IntersectAABB(const Ray& ray, const glm::vec3& aabbMin, const glm::vec3& aabbMax);
