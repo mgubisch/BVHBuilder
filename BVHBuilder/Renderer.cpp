@@ -10,6 +10,7 @@
 //brute force intersection triangles with 640x640 pixels: NUM_TRIS = 64   Render: ~96ms   BVHBuild: 0ms
 //brute force intersection triangles with 640x640 pixels: NUM_TRIS = 512  Render: ~1109ms BVHBuild: 0ms
 //brute force intersection triangles with 640x640 pixels: NUM_TRIS = 1024 Render: ~2980ms BVHBuild: 0ms
+//simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 12582 Render: mulitple seconds BVHBuild: 0ms
 
 //simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 64   Render: ~19ms BVHBuild: 0.005ms
 //simple bvh build and traversal with 640x640 pixels: NUM_TRIS = 512  Render: ~60ms BVHBuild: 0.069ms
