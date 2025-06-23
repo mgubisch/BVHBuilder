@@ -18,8 +18,8 @@ struct BVHNode
 
 struct BVH
 {
-	uint32_t triIdx[NUM_TRIS];
-	BVHNode  nodes[NUM_TRIS * 2 - 1];  // Pointer to the array of BVH nodes
+	alignas(64) uint32_t triIdx[NUM_TRIS];
+	alignas(64) BVHNode  nodes[NUM_TRIS * 2 - 1];  // Pointer to the array of BVH nodes
 	uint32_t rootNodeIndex{0};  // Index of the root node
 	uint32_t nodesUsed{1};  // Number of nodes currently used in the BVH
 };
